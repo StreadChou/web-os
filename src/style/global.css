@@ -1,0 +1,108 @@
+
+.wo_screen,
+.wo_screen *,
+.wo_screen *::before,
+.wo_screen *::after {
+    box-sizing: border-box;
+}
+
+.wo_screen h1,
+.wo_screen h2,
+.wo_screen h3,
+.wo_screen h4,
+.wo_screen h5,
+.wo_screen h6,
+.wo_screen p,
+.wo_screen figure,
+.wo_screen blockquote,
+.wo_screen dl,
+.wo_screen dd {
+    margin: 0;
+    padding: 0;
+}
+
+.wo_screen ul,
+.wo_screen ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.wo_screen a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.wo_screen img,
+.wo_screen picture,
+.wo_screen video,
+.wo_screen canvas,
+.wo_screen svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.wo_screen input,
+.wo_screen button,
+.wo_screen textarea,
+.wo_screen select {
+    font: inherit;
+}
+
+.wo_screen button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.wo_screen {
+    --docker-height: 50px;
+}
+
+
+.wo_screen {
+    line-height: 1.5;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #000;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    height: 100vh;
+    width: 100vw;
+    background: teal;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.wo_screen img {
+    -webkit-user-drag: none; /* Safari */
+    -khtml-user-drag: none; /* Konqueror HTML */
+    -moz-user-drag: none; /* Firefox */
+    -o-user-drag: none; /* Opera */
+    user-drag: none; /* Non-prefixed version, currently supported by Chrome */
+}
+
+.wo_screen .no-hand-cursor {
+    cursor: default; /* 或者 cursor: auto; */
+    pointer-events: none; /* 禁止所有指针事件 */
+}
+
+.wo_screen .docker-box {
+    border-radius: 7px;
+    height: var(--docker-height);
+    background: rgba(255, 255, 255, 0.1); /* 更加透明的背景 */
+    backdrop-filter: blur(15px); /* 提升模糊强度 */
+    -webkit-backdrop-filter: blur(15px); /* Safari 兼容 */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* 更柔和的边框 */
+    box-shadow: 0 4px 50px rgba(0, 0, 0, 0.15); /* 增强阴影效果 */
+    transition: background 0.3s ease, border 0.3s ease; /* 增加过渡效果 */
+}
+
+.wo_screen .docker-box:hover {
+    background: rgba(255, 255, 255, 0.3); /* 增加鼠标悬停时的背景透明度 */
+    border: 1px solid rgba(255, 255, 255, 0.4); /* 鼠标悬停时加深边框颜色 */
+}

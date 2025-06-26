@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "skipLibCheck": true, // 忽略第三方库的类型检查，可以加快编译速度
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}
