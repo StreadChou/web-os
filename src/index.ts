@@ -5,6 +5,7 @@ import {useAppManager} from "./store/AppManager.ts";
 import type {AppConfigInterface} from "./app/AppInterface.ts";
 import {createPinia} from 'pinia';
 import type {WebOSPluginOptions} from "./define/WebOSPlugin.ts";
+import {WindowInstance} from "./window/WindowInstance.ts";
 
 // 定义 WebOSPlugin
 const WebOSPlugin: Plugin = {
@@ -45,6 +46,6 @@ const WebOSPlugin: Plugin = {
 };
 
 
-export {WebOs, useAppManager};
+export {WebOs, useAppManager, WindowInstance};
 export type {AppConfigInterface, WebOSPluginOptions};
 export default WebOSPlugin;

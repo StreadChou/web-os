@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, computed, watch} from 'vue';
+import {ref, computed} from 'vue';
 import {WindowInstance} from "./WindowInstance.ts";
 import {useAppManager} from "../store/AppManager.ts";
 
@@ -12,34 +12,14 @@ const props = defineProps<{
 const MIN_WIDTH = 200; // 窗口最小宽度
 const MIN_HEIGHT = 150; // 窗口最小高度
 
-// 内部响应式状态，用于在拖拽和调整大小时临时持有值
-// 它们会同步父组件的props，并在用户操作时更新，最终通过emit通知父组件
-const localX = ref<string | number>(props.windowInstance.x);
-const localY = ref<string | number>(props.windowInstance.y);
-const localWidth = ref<string | number>(props.windowInstance.width);
-const localHeight = ref<string | number>(props.windowInstance.height);
-
-// 监听父组件传来的props变化，同步到内部状态
-watch(() => props.windowInstance.x, (newVal) => {
-  localX.value = newVal;
-});
-watch(() => props.windowInstance.y, (newVal) => {
-  localY.value = newVal;
-});
-watch(() => props.windowInstance.width, (newVal) => {
-  localWidth.value = newVal;
-});
-watch(() => props.windowInstance.height, (newVal) => {
-  localHeight.value = newVal;
-});
-
+const OsWindow = ref(AppManager.windows[props.windowInstance.id] as WindowInstance);
 
 // 窗口的样式计算属性
 const windowStyle = computed(() => ({
-  left: typeof localX.value == 'string' ? localX.value : `${localX.value}px`,
-  top: typeof localY.value == 'string' ? localY.value : `${localY.value}px`,
-  width: typeof localWidth.value == 'string' ? localWidth.value : `${localWidth.value}px`,
-  height: typeof localHeight.value == 'string' ? localHeight.value : `${localHeight.value}px`,
+  left: typeof OsWindow.value.x == 'string' ? OsWindow.value.x : `${OsWindow.value.x}px`,
+  top: typeof OsWindow.value.y == 'string' ? OsWindow.value.y : `${OsWindow.value.y}px`,
+  width: typeof OsWindow.value.width == 'string' ? OsWindow.value.width : `${OsWindow.value.width}px`,
+  height: typeof OsWindow.value.height == 'string' ? OsWindow.value.height : `${OsWindow.value.height}px`,
   zIndex: props.windowInstance.zIndex,
   display: props.windowInstance.isMinimized ? 'none' : 'block', // 最小化时隐藏
 }));
@@ -57,8 +37,8 @@ const startDrag = (e: MouseEvent) => {
   isDragging = true;
   startX = e.clientX;
   startY = e.clientY;
-  initialX = localX.value as number;
-  initialY = localY.value as number;
+  initialX = OsWindow.value.x as number;
+  initialY = OsWindow.value.y as number;
 
   document.addEventListener('mousemove', doDrag);
   document.addEventListener('mouseup', stopDrag);
@@ -76,8 +56,8 @@ const doDrag = (e: MouseEvent) => {
   let newX = initialX + dx;
   let newY = initialY + dy;
 
-  localX.value = newX;
-  localY.value = newY;
+  OsWindow.value.x = newX;
+  OsWindow.value.y = newY;
 };
 
 const stopDrag = () => {
@@ -101,12 +81,12 @@ const startResize = (e: MouseEvent, direction: string) => {
 
   isResizing = true;
   resizeDirection = direction;
-  initialWidth = localWidth.value as number;
-  initialHeight = localHeight.value as number;
+  initialWidth = OsWindow.value.width as number;
+  initialHeight = OsWindow.value.height as number;
   initialMouseX = e.clientX;
   initialMouseY = e.clientY;
-  initialWindowX = localX.value as number;
-  initialWindowY = localY.value as number;
+  initialWindowX = OsWindow.value.x as number;
+  initialWindowY = OsWindow.value.y as number;
 
   document.addEventListener('mousemove', doResize);
   document.addEventListener('mouseup', stopResize);
@@ -121,10 +101,10 @@ const doResize = (e: MouseEvent) => {
   const dx = e.clientX - initialMouseX;
   const dy = e.clientY - initialMouseY;
 
-  let newX = localX.value;
-  let newY = localY.value;
-  let newWidth = localWidth.value;
-  let newHeight = localHeight.value;
+  let newX = OsWindow.value.x;
+  let newY = OsWindow.value.y;
+  let newWidth = OsWindow.value.width;
+  let newHeight = OsWindow.value.height;
 
   switch (resizeDirection) {
     case 'n': // top
@@ -163,10 +143,10 @@ const doResize = (e: MouseEvent) => {
       break;
   }
 
-  localX.value = newX;
-  localY.value = newY;
-  localWidth.value = newWidth;
-  localHeight.value = newHeight;
+  OsWindow.value.x = newX;
+  OsWindow.value.y = newY;
+  OsWindow.value.width = newWidth;
+  OsWindow.value.height = newHeight;
 };
 
 const stopResize = () => {
@@ -176,64 +156,58 @@ const stopResize = () => {
   document.removeEventListener('mouseup', stopResize);
 };
 
-// --- 窗口控制按钮事件 ---
-const closeWindow = () => {
-  AppManager.closeWindow(props.windowInstance.id);
-};
 
-const maximizeWindow = () => {
-  AppManager.toggleMaximize(props.windowInstance.id);
-};
-
-const minimizeWindow = () => {
-  AppManager.toggleMinimize(props.windowInstance.id);
-};
-
-// --- 点击窗口置顶 ---
-const handleWindowMouseDown = () => {
-  AppManager.selectWindows(props.windowInstance.id);
-};
 </script>
 
 <template>
   <div
       class="window"
       :style="windowStyle"
-      @mousedown="handleWindowMouseDown"
+      @mousedown="AppManager.selectWindows(OsWindow.id)"
       :class="{ 'is-maximized': windowInstance.isMaximized, 'is-minimized': windowInstance.isMinimized }"
   >
     <!-- 标题栏 -->
-    <div class="window-header" @mousedown="startDrag">
-      <span class="window-title">{{ windowInstance.app.name }}</span>
-      <div class="window-controls">
-        <button @click.stop="minimizeWindow" class="control-btn minimize-btn">_</button>
-        <button @click.stop="maximizeWindow" class="control-btn maximize-btn">
-          <span v-if="!windowInstance.isMaximized">&#9723;</span> <!-- 方框图标 -->
-          <span v-else>&#8597;</span> <!-- 恢复图标 -->
-        </button>
-        <button @click.stop="closeWindow" class="control-btn close-btn">X</button>
+    <template v-if="'header' in OsWindow.app">
+      <template v-if="OsWindow.app.header">
+        <component :is="windowInstance.app.header"
+                   v-bind="{
+                      osWindow: OsWindow,
+                      startDrag
+                  }"
+        ></component>
+      </template>
+    </template>
+    <template v-else>
+      <div class="window-header" @mousedown="startDrag">
+        <span class="window-title">{{ OsWindow.app.name }}</span>
+        <div class="window-controls">
+          <button @click.stop="AppManager.toggleMinimize(OsWindow.id);" class="control-btn minimize-btn">_</button>
+          <button @click.stop="AppManager.toggleMaximize(OsWindow.id);" class="control-btn maximize-btn">
+            <span v-if="!windowInstance.isMaximized">&#9723;</span> <!-- 方框图标 -->
+            <span v-else>&#8597;</span> <!-- 恢复图标 -->
+          </button>
+          <button @click.stop="OsWindow.close()" class="control-btn close-btn">X</button>
+        </div>
       </div>
-    </div>
+    </template>
+
 
     <!-- 窗口内容区域 -->
     <div class="window-content">
       <template v-if="windowInstance.app.view">
         <component :is="windowInstance.app.view"
-                   v-bind="{WindowInstance, localWidth, localHeight, localX,localY}"
+                   v-bind="{
+                      osWindow: OsWindow,
+                      startDrag
+                  }"
         ></component>
       </template>
-      <template>
+      <template v-else>
         <!-- 这里可以放置任何窗口内容，例如iframe, 图片, 文本等 -->
         <p>这是窗口 {{ windowInstance.id }} 的内容区域。</p>
-        <p>
-          宽度: {{ typeof localWidth == 'number' ? localWidth.toFixed(0) : localWidth }}px,
-          高度:{{ typeof localHeight == 'number' ? localHeight.toFixed(0) : localHeight }}px,
-
-        </p>
-        <p>
-          X: {{ typeof localX == 'number' ? localX.toFixed(0) : localX }}px,
-          Y: {{ typeof localY == 'number' ? localY.toFixed(0) : localY }}px,
-        </p>
+        <template v-for="(item, key) in windowStyle">
+          <div>{{ key }}: {{ item }}</div>
+        </template>
       </template>
     </div>
 
@@ -337,6 +311,7 @@ const handleWindowMouseDown = () => {
 /* 窗口内容 */
 .window-content {
   flex-grow: 1; /* 占据剩余空间 */
+  min-height: 100px;
   overflow: auto; /* 内容超出时滚动 */
   font-size: 14px;
   color: #333;

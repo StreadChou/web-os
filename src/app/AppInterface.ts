@@ -5,6 +5,8 @@ export interface AppConfigInterface {
     icon: string;
     /** 渲染组件 */
     view?: any;
+    /** 标题栏 */
+    header?: any;
     /** 是否隐藏 */
     hidden?: () => boolean;
 

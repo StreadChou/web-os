@@ -1,4 +1,5 @@
 import type {AppConfigInterface} from "../app/AppInterface.ts";
+import {useAppManager} from "../store/AppManager.ts";
 
 export class WindowInstance {
     id: number;
@@ -29,6 +30,11 @@ export class WindowInstance {
         this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    close() {
+        const AppManager = useAppManager();
+        AppManager.closeWindow(this.id);
     }
 
 }
