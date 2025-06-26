@@ -3,6 +3,8 @@ export interface AppConfigInterface {
     name: string;
     /** App图标 */
     icon: string;
+    /** 渲染组件 */
+    view?: any;
     /** 是否隐藏 */
     hidden?: () => boolean;
 

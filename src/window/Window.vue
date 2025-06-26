@@ -217,17 +217,24 @@ const handleWindowMouseDown = () => {
 
     <!-- 窗口内容区域 -->
     <div class="window-content">
-      <!-- 这里可以放置任何窗口内容，例如iframe, 图片, 文本等 -->
-      <p>这是窗口 {{ windowInstance.id }} 的内容区域。</p>
-      <p>
-        宽度: {{ typeof localWidth == 'number' ? localWidth.toFixed(0) : localWidth }}px,
-        高度:{{ typeof localHeight == 'number' ? localHeight.toFixed(0) : localHeight }}px,
+      <template v-if="windowInstance.app.view">
+        <component :is="windowInstance.app.view"
+                   v-bind="{WindowInstance, localWidth, localHeight, localX,localY}"
+        ></component>
+      </template>
+      <template>
+        <!-- 这里可以放置任何窗口内容，例如iframe, 图片, 文本等 -->
+        <p>这是窗口 {{ windowInstance.id }} 的内容区域。</p>
+        <p>
+          宽度: {{ typeof localWidth == 'number' ? localWidth.toFixed(0) : localWidth }}px,
+          高度:{{ typeof localHeight == 'number' ? localHeight.toFixed(0) : localHeight }}px,
 
-      </p>
-      <p>
-        X: {{ typeof localX == 'number' ? localX.toFixed(0) : localX }}px,
-        Y: {{ typeof localY == 'number' ? localY.toFixed(0) : localY }}px,
-      </p>
+        </p>
+        <p>
+          X: {{ typeof localX == 'number' ? localX.toFixed(0) : localX }}px,
+          Y: {{ typeof localY == 'number' ? localY.toFixed(0) : localY }}px,
+        </p>
+      </template>
     </div>
 
     <!-- 拖拽手柄 -->
@@ -330,7 +337,6 @@ const handleWindowMouseDown = () => {
 /* 窗口内容 */
 .window-content {
   flex-grow: 1; /* 占据剩余空间 */
-  padding: 10px;
   overflow: auto; /* 内容超出时滚动 */
   font-size: 14px;
   color: #333;
