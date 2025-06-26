@@ -1,7 +1,7 @@
 {
-  "name": "web-os",
+  "name": "@stread/web-os",
   "private": false,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "main": "dist/web-os.umd.js",
   "module": "dist/web-os.es.js",
@@ -37,5 +37,8 @@
     "vite": "^6.3.5",
     "vite-plugin-dts": "^4.5.4",
     "vue-tsc": "^2.2.8"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
