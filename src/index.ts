@@ -8,7 +8,7 @@ import type {WebOSPluginOptions} from "./define/WebOSPlugin.ts";
 import {WindowInstance} from "./window/WindowInstance.ts";
 
 // 定义 WebOSPlugin
-const WebOSPlugin: Plugin = {
+const WebOSPlugin: Plugin<WebOSPluginOptions> = {
     /**
      * Vue 插件的安装方法。
      * 当消费者调用 `app.use(WebOSPlugin, options)` 时，此方法会被执行。

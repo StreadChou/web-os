@@ -2,6 +2,7 @@
 import {ref, computed} from 'vue';
 import {WindowInstance} from "./WindowInstance.ts";
 import {useAppManager} from "../store/AppManager.ts";
+import WindowBar from "./WindowBar.vue";
 
 const AppManager = useAppManager();
 const props = defineProps<{
@@ -21,7 +22,7 @@ const windowStyle = computed(() => ({
   width: typeof OsWindow.value.width == 'string' ? OsWindow.value.width : `${OsWindow.value.width}px`,
   height: typeof OsWindow.value.height == 'string' ? OsWindow.value.height : `${OsWindow.value.height}px`,
   zIndex: props.windowInstance.zIndex,
-  display: props.windowInstance.isMinimized ? 'none' : 'block', // 最小化时隐藏
+  display: props.windowInstance.isMinimized ? 'none' : 'flex', // 最小化时隐藏
 }));
 
 // --- 拖拽功能实现 ---
@@ -160,54 +161,41 @@ const stopResize = () => {
 </script>
 
 <template>
-  <div
-      class="window"
-      :style="windowStyle"
-      @mousedown="OsWindow.active()"
-      :class="{ 'is-maximized': windowInstance.isMaximized, 'is-minimized': windowInstance.isMinimized }"
+  <div class="window" :style="windowStyle"
+       @mousedown="OsWindow.active()"
+       :class="{ 'is-maximized': windowInstance.isMaximized, 'is-minimized': windowInstance.isMinimized }"
   >
-    <!-- 标题栏 -->
+    <!-- 标题栏: 先使用APP自己设置的 -->
     <template v-if="'header' in OsWindow.app">
       <template v-if="OsWindow.app.header">
-        <component :is="windowInstance.app.header"
-                   v-bind="{
-                      osWindow: OsWindow,
-                      startDrag
-                  }"
-        ></component>
+        <component :is="windowInstance.app.header" v-bind="{osWindow: OsWindow,startDrag}"></component>
       </template>
     </template>
+    <!-- 标题栏: 否则读全局的 -->
+    <template v-else-if="'windowBar' in AppManager.options">
+      <template v-if="AppManager.options.windowBar">
+        <component :is="AppManager.options.windowBar" v-bind="{osWindow: OsWindow,startDrag}"></component>
+      </template>
+    </template>
+    <!-- 标题栏: 最后才走默认的 -->
     <template v-else>
-      <div class="window-header" @mousedown="startDrag">
-        <span class="window-title">{{ OsWindow.app.name }}</span>
-        <div class="window-controls">
-          <button @click.stop="OsWindow.toggleMinimize();" class="control-btn minimize-btn">_</button>
-          <button @click.stop="OsWindow.toggleMaximize();" class="control-btn maximize-btn">
-            <span v-if="!windowInstance.isMaximized">&#9723;</span> <!-- 方框图标 -->
-            <span v-else>&#8597;</span> <!-- 恢复图标 -->
-          </button>
-          <button @click.stop="OsWindow.close()" class="control-btn close-btn">X</button>
-        </div>
-      </div>
+      <WindowBar v-bind="{osWindow: OsWindow, startDrag}"></WindowBar>
     </template>
 
 
     <!-- 窗口内容区域 -->
     <div class="window-content">
       <template v-if="windowInstance.app.view">
-        <component :is="windowInstance.app.view"
-                   v-bind="{
-                      osWindow: OsWindow,
-                      startDrag
-                  }"
-        ></component>
+        <component :is="windowInstance.app.view" v-bind="{osWindow: OsWindow,startDrag}"></component>
       </template>
       <template v-else>
-        <!-- 这里可以放置任何窗口内容，例如iframe, 图片, 文本等 -->
-        <p>这是窗口 {{ windowInstance.id }} 的内容区域。</p>
-        <template v-for="(item, key) in windowStyle">
-          <div>{{ key }}: {{ item }}</div>
-        </template>
+        <div class="default-window-content">
+          <!-- 这里可以放置任何窗口内容，例如iframe, 图片, 文本等 -->
+          <p>这是窗口 {{ windowInstance.id }} 的内容区域。</p>
+          <template v-for="(item, key) in windowStyle">
+            <div>{{ key }}: {{ item }}</div>
+          </template>
+        </div>
       </template>
     </div>
 
@@ -226,7 +214,6 @@ const stopResize = () => {
 <style scoped>
 .window {
   position: absolute;
-  background-color: #fff;
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 6px;
@@ -246,68 +233,6 @@ const stopResize = () => {
   box-shadow: none;
 }
 
-/* 标题栏 */
-.window-header {
-  height: 30px;
-  background-color: #f0f0f0;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  cursor: grab;
-  user-select: none; /* 防止拖拽时选中文字 */
-  flex-shrink: 0; /* 防止标题栏被内容挤压 */
-}
-
-.window-header:active {
-  cursor: grabbing;
-}
-
-.window-title {
-  flex-grow: 1;
-  font-weight: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 14px;
-}
-
-.window-controls {
-  display: flex;
-  gap: 4px;
-}
-
-.control-btn {
-  width: 24px;
-  height: 24px;
-  border: none;
-  background-color: transparent;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 3px;
-  transition: background-color 0.2s;
-}
-
-.control-btn:hover {
-  background-color: #e0e0e0;
-}
-
-.minimize-btn:hover {
-  background-color: #e0e0e0;
-}
-
-.maximize-btn:hover {
-  background-color: #e0e0e0;
-}
-
-.close-btn:hover {
-  background-color: #e81123;
-  color: white;
-}
-
 /* 窗口内容 */
 .window-content {
   flex-grow: 1; /* 占据剩余空间 */
@@ -315,6 +240,14 @@ const stopResize = () => {
   overflow: auto; /* 内容超出时滚动 */
   font-size: 14px;
   color: #333;
+}
+
+.default-window-content {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1); /* 更加透明的背景 */
+  backdrop-filter: blur(15px); /* 提升模糊强度 */
+  -webkit-backdrop-filter: blur(15px); /* Safari 兼容 */
 }
 
 /* 拖拽手柄 */

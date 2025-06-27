@@ -7,7 +7,9 @@ const appManager = useAppManager();
 
 <template>
   <div class="Wallpaper">
-    <img :src="appManager.options.wallpaper" alt="Wallpaper"/>
+    <template v-if="appManager.options.wallpaper">
+      <img :src="appManager.options.wallpaper" alt="Wallpaper"/>
+    </template>
   </div>
 </template>
 

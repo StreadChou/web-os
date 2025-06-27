@@ -1,0 +1,1 @@
+https://npmmirror.com/sync/@stread/web-os
