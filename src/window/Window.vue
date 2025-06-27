@@ -163,7 +163,7 @@ const stopResize = () => {
   <div
       class="window"
       :style="windowStyle"
-      @mousedown="AppManager.selectWindows(OsWindow.id)"
+      @mousedown="OsWindow.active()"
       :class="{ 'is-maximized': windowInstance.isMaximized, 'is-minimized': windowInstance.isMinimized }"
   >
     <!-- 标题栏 -->
@@ -181,8 +181,8 @@ const stopResize = () => {
       <div class="window-header" @mousedown="startDrag">
         <span class="window-title">{{ OsWindow.app.name }}</span>
         <div class="window-controls">
-          <button @click.stop="AppManager.toggleMinimize(OsWindow.id);" class="control-btn minimize-btn">_</button>
-          <button @click.stop="AppManager.toggleMaximize(OsWindow.id);" class="control-btn maximize-btn">
+          <button @click.stop="OsWindow.toggleMinimize();" class="control-btn minimize-btn">_</button>
+          <button @click.stop="OsWindow.toggleMaximize();" class="control-btn maximize-btn">
             <span v-if="!windowInstance.isMaximized">&#9723;</span> <!-- 方框图标 -->
             <span v-else>&#8597;</span> <!-- 恢复图标 -->
           </button>

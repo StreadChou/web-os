@@ -13,8 +13,7 @@ export default defineConfig({
             insertTypesEntry: true, // 在 package.json 的 types/typings 字段指向的入口文件中插入一个类型入口
             // *** 关键：指定使用 tsconfig.app.json 来生成类型 ***
             tsconfigPath: './tsconfig.app.json', // 告诉 dts 插件使用这个 tsconfig 来读取源码并生成类型
-            // rollupTypes: true, // 如果你想将所有类型定义合并成一个文件，可以设置为 true，但通常 insertTypesEntry 配合默认行为就够了
-            // skipDiagnostics: false, // 默认false，如果需要跳过诊断（不推荐，但可能在某些复杂项目需要）
+            rollupTypes: true, // 如果你想将所有类型定义合并成一个文件，可以设置为 true，但通常 insertTypesEntry 配合默认行为就够了
         })
     ],
     build: {

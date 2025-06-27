@@ -32,6 +32,22 @@ export class WindowInstance {
         this.height = height;
     }
 
+    active() {
+        const AppManager = useAppManager();
+        AppManager.selectWindows(this.id);
+    }
+
+    toggleMinimize() {
+        const AppManager = useAppManager();
+        AppManager.toggleMinimize(this.id);
+    }
+
+
+    toggleMaximize() {
+        const AppManager = useAppManager();
+        AppManager.toggleMaximize(this.id);
+    }
+
     close() {
         const AppManager = useAppManager();
         AppManager.closeWindow(this.id);

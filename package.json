@@ -1,7 +1,7 @@
 {
   "name": "@stread/web-os",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.3",
   "type": "module",
   "main": "dist/web-os.umd.js",
   "module": "dist/web-os.es.js",
