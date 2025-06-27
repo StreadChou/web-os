@@ -51,6 +51,15 @@ const doDrag = (e: MouseEvent) => {
   const item = AppManager.windows[props.windowInstance.id]
   if (!item) return;
 
+  if (e.clientX <= 0) return;
+  if (e.clientY <= 0) return;
+
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  if (e.clientX >= screenWidth) return;
+  if (e.clientY >= screenHeight) return;
+
+
   const dx = e.clientX - startX;
   const dy = e.clientY - startY;
 
