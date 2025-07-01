@@ -16,14 +16,28 @@ const MIN_HEIGHT = 150; // 窗口最小高度
 const OsWindow = ref(AppManager.windows[props.windowInstance.id] as WindowInstance);
 
 // 窗口的样式计算属性
-const windowStyle = computed(() => ({
-  left: typeof OsWindow.value.x == 'string' ? OsWindow.value.x : `${OsWindow.value.x}px`,
-  top: typeof OsWindow.value.y == 'string' ? OsWindow.value.y : `${OsWindow.value.y}px`,
-  width: typeof OsWindow.value.width == 'string' ? OsWindow.value.width : `${OsWindow.value.width}px`,
-  height: typeof OsWindow.value.height == 'string' ? OsWindow.value.height : `${OsWindow.value.height}px`,
-  zIndex: props.windowInstance.zIndex,
-  display: props.windowInstance.isMinimized ? 'none' : 'flex', // 最小化时隐藏
-}));
+const windowStyle = computed(() => {
+  const data: any = {
+    left: typeof OsWindow.value.x == 'string' ? OsWindow.value.x : `${OsWindow.value.x}px`,
+    top: typeof OsWindow.value.y == 'string' ? OsWindow.value.y : `${OsWindow.value.y}px`,
+    width: typeof OsWindow.value.width == 'string' ? OsWindow.value.width : `${OsWindow.value.width}px`,
+    height: typeof OsWindow.value.height == 'string' ? OsWindow.value.height : `${OsWindow.value.height}px`,
+    zIndex: props.windowInstance.zIndex,
+    display: props.windowInstance.isMinimized ? 'none' : 'flex', // 最小化时隐藏
+  }
+
+  if (OsWindow.value.app.noBoard || OsWindow.value.isMaximized) {
+    data["border"] = "none";
+    data["box-shadow"] = "none";
+    data["border-radius"] = "0";
+  } else {
+    data["border"] = "1px solid #ccc";
+    data["box-shadow"] = "0 4px 8px rgba(0, 0, 0, 0.2)";
+    data["border-radius"] = "6px";
+  }
+
+  return data;
+});
 
 // --- 拖拽功能实现 ---
 let isDragging = false;
@@ -217,15 +231,13 @@ const stopResize = () => {
     <div v-if="!windowInstance.isMaximized" class="resize-handle sw" @mousedown="startResize($event, 'sw')"></div>
     <div v-if="!windowInstance.isMaximized" class="resize-handle w" @mousedown="startResize($event, 'w')"></div>
     <div v-if="!windowInstance.isMaximized" class="resize-handle nw" @mousedown="startResize($event, 'nw')"></div>
+
   </div>
 </template>
 
 <style scoped>
 .window {
   position: absolute;
-  border: 1px solid #ccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
   display: flex;
   flex-direction: column;
   overflow: hidden; /* 确保内容不会超出窗口 */

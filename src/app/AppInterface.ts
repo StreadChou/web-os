@@ -14,4 +14,12 @@ export interface AppConfigInterface {
     defaultWidth?: number;
     /** 默认高度, 不给则是400 */
     defaultHeight?: number;
+    /** 不需要外边框 */
+    noBoard?: boolean;
+
+    /** 传参 */
+    props?: Record<string, any>;
+
+    /** 关闭调用 */
+    onClose?: () => void;
 }

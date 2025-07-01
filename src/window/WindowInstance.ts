@@ -20,6 +20,8 @@ export class WindowInstance {
     originalWidth?: number;
     originalHeight?: number;
 
+    childWindows: WindowInstance[] = [];
+
 
     constructor(id: number, app: AppConfigInterface, x: number, y: number, width: number, height: number) {
         this.id = id;
@@ -51,6 +53,15 @@ export class WindowInstance {
     close() {
         const AppManager = useAppManager();
         AppManager.closeWindow(this.id);
+        if (this.app.onClose) this.app.onClose();
+        this.childWindows.forEach(ele => ele.close());
+    }
+
+    /** 创建子Windows,一旦关闭主window, 子window会被一起关闭. */
+    createChildWindow(app: AppConfigInterface) {
+        const AppManager = useAppManager();
+        const window = AppManager.createWindow(app);
+        this.childWindows.push(window);
     }
 
 }

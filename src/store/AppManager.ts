@@ -31,6 +31,7 @@ export const useAppManager = defineStore('_wo_app_manager', {
             this.count += 1;
             const window = new WindowInstance(this.count, app, x, y, width, height);
             this.windows[window.id] = window;
+            return window;
         },
 
         closeWindow(id: number) {
