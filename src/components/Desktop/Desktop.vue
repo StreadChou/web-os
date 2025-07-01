@@ -71,14 +71,14 @@ const clickApp = (app: AppConfigInterface, index: number) => {
   width: 70px; /* 每个图标项的固定宽度，给文字留一些空间 */
   flex-shrink: 0; /* 防止项目在空间不足时缩小 */
   cursor: pointer;
-  padding: 5px; /* 确保与选中状态的 padding 保持一致 */
+  padding: 4px;
   border: 1px solid transparent; /* 默认透明边框 */
 }
 
 .app-item.is-selected {
   border: 1px solid rgba(0, 120, 215, 0.8); /* Windows 风格的蓝色边框 */
   background-color: rgba(0, 120, 215, 0.2); /* 浅蓝色背景 */
-  padding: 4px; /* 增加内边距，让边框和内容之间有空间 */
+  padding: 4px;
   border-radius: 4px; /* 轻微圆角，与Windows风格接近 */
   box-sizing: border-box; /* 确保 padding 包含在 width 和 height 内 */
 }
@@ -94,10 +94,13 @@ const clickApp = (app: AppConfigInterface, index: number) => {
   color: white; /* 文本颜色 */
   font-size: 12px; /* 文本字体大小 */
 
-  white-space: nowrap; /* 禁止文本换行 */
-  overflow: hidden; /* 隐藏溢出内容 */
-  text-overflow: ellipsis; /* 溢出部分显示省略号 */
   max-width: 100%; /* 限制最大宽度为父元素的100% */
-
+  word-break: break-all;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;       /* 限制最多2行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
