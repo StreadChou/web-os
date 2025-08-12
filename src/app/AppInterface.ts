@@ -18,6 +18,8 @@ export interface AppConfigInterface {
     defaultWidth?: number;
     /** 默认高度, 不给则是400 */
     defaultHeight?: number;
+    /** 默认打开最大化 */
+    defaultMax?: boolean;
     /** 不需要外边框 */
     noBoard?: boolean;
 
