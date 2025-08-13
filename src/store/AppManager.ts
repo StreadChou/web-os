@@ -3,13 +3,22 @@ import type {AppConfigInterface} from "../app/AppInterface.ts";
 import {WindowInstance} from "../window/WindowInstance.ts";
 import type {WebOSPluginOptions} from "../define/WebOSPlugin.ts";
 
+export interface DomRef {
+    windowLayoutRef?: HTMLDivElement,
+    appArea?: HTMLDivElement,
+}
+
 export const useAppManager = defineStore('_wo_app_manager', {
     state: () => ({
         count: 0,
 
         options: {} as WebOSPluginOptions,
+        // 所有的软件
         apps: [] as AppConfigInterface[],
+        // 所有正在运行的软件
         windows: {} as { [key in number]: WindowInstance },
+        // 所有dom链接的ref
+        domRef: {} as DomRef,
 
         /** 打开应用时候的默认X位置 */
         defaultX: 50,
@@ -31,47 +40,17 @@ export const useAppManager = defineStore('_wo_app_manager', {
             this.count += 1;
             const window = new WindowInstance(this.count, app, x, y, width, height);
             this.windows[window.id] = window;
+
+            // 设置默认最大化
             if (app.defaultMax) window.toggleMaximize();
+            // 设置活跃
+            window.active();
+
             return window;
         },
 
         closeWindow(id: number) {
             delete this.windows[id]
-        },
-
-        toggleMaximize(id: number, x?: number, y?: number) {
-            const item: WindowInstance = this.windows[id];
-            if (!item) return null;
-            if (item.isMaximized) {
-                // 从最大化状态恢复
-                item.x = x ?? item.originalX ?? 0;
-                item.y = y ?? item.originalY ?? 0;
-                item.width = item.originalWidth || 400;
-                item.height = item.originalHeight || 300;
-            } else {
-                // 记录当前尺寸和位置，然后最大化
-                item.originalX = item.x as number;
-                item.originalY = item.y as number;
-                item.originalWidth = item.width as number;
-                item.originalHeight = item.height as number;
-
-                item.x = 0;
-                item.y = 0;
-                item.width = "100vw";
-                item.height = "100vh";
-            }
-            item.isMaximized = !item.isMaximized;
-            this.selectWindows(id); // 最大化/恢复时置顶
-        },
-
-        toggleMinimize(id: number) {
-            const item = this.windows[id];
-            if (!item) return null;
-            item.isMinimized = !item.isMinimized;
-            // 如果窗口从最小化状态恢复，则将其置顶
-            if (!item.isMinimized) {
-                this.selectWindows(id);
-            }
         },
 
         selectWindows(id: number) {

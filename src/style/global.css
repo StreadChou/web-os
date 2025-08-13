@@ -14,7 +14,7 @@
     -ms-user-select: none;
 }
 
-.wo_screen  {
+.wo_screen {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -22,12 +22,9 @@
     color: inherit;
 }
 
-
-
-
-/*.wo_screen img {*/
-
-/*}*/
+.wo_screen {
+    --docker-height: 60px;
+}
 
 .wo_screen .no-hand-cursor {
     cursor: default; /* 或者 cursor: auto; */
@@ -46,6 +43,6 @@
 }
 
 .wo_screen .docker-box:hover {
-    background: rgba(255, 255, 255, 0.3); /* 增加鼠标悬停时的背景透明度 */
+    background: rgba(255, 255, 255, 0.2); /* 增加鼠标悬停时的背景透明度 */
     border: 1px solid rgba(255, 255, 255, 0.4); /* 鼠标悬停时加深边框颜色 */
 }
