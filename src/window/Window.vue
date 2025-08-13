@@ -184,25 +184,39 @@ const stopResize = () => {
 </script>
 
 <template>
-  <div class="window" :style="windowStyle"
+  <div class="window"
+       :style="windowStyle"
        @mousedown="OsWindow.active()"
-       :class="{ 'is-maximized': windowInstance.isMaximized, 'is-minimized': windowInstance.isMinimized }"
+       :class="{
+         'is-maximized': windowInstance.isMaximized,
+       }"
   >
     <!-- 标题栏: 先使用APP自己设置的 -->
     <template v-if="'header' in OsWindow.app">
       <template v-if="OsWindow.app.header">
-        <component :is="windowInstance.app.header" v-bind="{osWindow: OsWindow,startDrag}"></component>
+        <component
+            :is="windowInstance.app.header"
+            v-bind="{osWindow: OsWindow,startDrag}"
+            @dblclick="windowInstance.toggleMaximize()"
+        ></component>
       </template>
     </template>
     <!-- 标题栏: 否则读全局的 -->
     <template v-else-if="'windowBar' in AppManager.options">
       <template v-if="AppManager.options.windowBar">
-        <component :is="AppManager.options.windowBar" v-bind="{osWindow: OsWindow,startDrag}"></component>
+        <component
+            :is="AppManager.options.windowBar"
+            v-bind="{osWindow: OsWindow,startDrag}"
+            @dblclick="windowInstance.toggleMaximize()"
+        ></component>
       </template>
     </template>
     <!-- 标题栏: 最后才走默认的 -->
     <template v-else>
-      <WindowBar v-bind="{osWindow: OsWindow, startDrag}"></WindowBar>
+      <WindowBar
+          v-bind="{osWindow: OsWindow, startDrag}"
+          @dblclick="windowInstance.toggleMaximize()"
+      ></WindowBar>
     </template>
 
 
@@ -214,7 +228,7 @@ const stopResize = () => {
       <template v-else>
         <div class="default-window-content">
           <!-- 这里可以放置任何窗口内容，例如iframe, 图片, 文本等 -->
-          <p>这是窗口 {{ windowInstance.id }} 的内容区域。</p>
+          <div>这是窗口 {{ windowInstance.id }} 的内容区域。</div>
           <template v-for="(item, key) in windowStyle">
             <div>{{ key }}: {{ item }}</div>
           </template>
@@ -245,6 +259,7 @@ const stopResize = () => {
   min-height: 150px; /* 最小高度 */
   box-sizing: border-box; /* 边框包含在尺寸内 */
   pointer-events: auto; /* 允许窗口接收鼠标事件 */
+  transition: all 0.3s ease; /* 核心动画 */
 }
 
 /* 最大化时的样式 */
@@ -266,7 +281,7 @@ const stopResize = () => {
 .default-window-content {
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.1); /* 更加透明的背景 */
+  background: rgba(255, 255, 255, 0.63); /* 更加透明的背景 */
   backdrop-filter: blur(15px); /* 提升模糊强度 */
   -webkit-backdrop-filter: blur(15px); /* Safari 兼容 */
 }

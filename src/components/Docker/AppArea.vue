@@ -9,6 +9,8 @@ const toggleAppState = (id: number) => {
   if (!item) return null;
   // 最小化的应用直接打开
   if (item.isMinimized) return AppManager.toggleMinimize(id);
+  // 活跃的应用最小化
+  if (item.isActive) return AppManager.toggleMinimize(id);
   // 普通引用让其活跃
   AppManager.selectWindows(id);
 };
@@ -51,6 +53,11 @@ const toggleAppState = (id: number) => {
 .icon img {
   height: 30px;
   width: 30px;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
 }
 
 .point {

@@ -39,6 +39,10 @@ export class WindowInstance {
         AppManager.selectWindows(this.id);
     }
 
+    get isActive() {
+        return this.zIndex === 101;
+    }
+
     toggleMinimize() {
         const AppManager = useAppManager();
         AppManager.toggleMinimize(this.id);

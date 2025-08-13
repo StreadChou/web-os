@@ -1,67 +1,3 @@
-
-.wo_screen,
-.wo_screen *,
-.wo_screen *::before,
-.wo_screen *::after {
-    box-sizing: border-box;
-}
-
-.wo_screen h1,
-.wo_screen h2,
-.wo_screen h3,
-.wo_screen h4,
-.wo_screen h5,
-.wo_screen h6,
-.wo_screen p,
-.wo_screen figure,
-.wo_screen blockquote,
-.wo_screen dl,
-.wo_screen dd {
-    margin: 0;
-    padding: 0;
-}
-
-.wo_screen ul,
-.wo_screen ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.wo_screen a {
-    text-decoration: none;
-    color: inherit;
-}
-
-.wo_screen img,
-.wo_screen picture,
-.wo_screen video,
-.wo_screen canvas,
-.wo_screen svg {
-    display: block;
-    max-width: 100%;
-    height: auto;
-}
-
-.wo_screen input,
-.wo_screen button,
-.wo_screen textarea,
-.wo_screen select {
-    font: inherit;
-}
-
-.wo_screen button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-
-.wo_screen {
-    --docker-height: 50px;
-}
-
-
 .wo_screen {
     line-height: 1.5;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -78,13 +14,20 @@
     -ms-user-select: none;
 }
 
-.wo_screen img {
-    -webkit-user-drag: none; /* Safari */
-    -khtml-user-drag: none; /* Konqueror HTML */
-    -moz-user-drag: none; /* Firefox */
-    -o-user-drag: none; /* Opera */
-    user-drag: none; /* Non-prefixed version, currently supported by Chrome */
+.wo_screen  {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    color: inherit;
 }
+
+
+
+
+/*.wo_screen img {*/
+
+/*}*/
 
 .wo_screen .no-hand-cursor {
     cursor: default; /* 或者 cursor: auto; */

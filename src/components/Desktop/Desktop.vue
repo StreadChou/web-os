@@ -87,6 +87,11 @@ const clickApp = (app: AppConfigInterface, index: number) => {
   width: 40px; /* 图标宽度 */
   height: 40px; /* 图标高度 */
   object-fit: contain; /* 确保图片内容在指定尺寸内完整显示 */
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
 }
 
 .app-item span {
