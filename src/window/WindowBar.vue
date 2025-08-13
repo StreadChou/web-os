@@ -1,16 +1,27 @@
 <script setup lang="ts">
-
 import type {WindowInstance} from "./WindowInstance.ts";
+import {onMounted, useTemplateRef} from "vue";
 
-defineProps<{
+const WindowHeaderRef = useTemplateRef<HTMLElement>("WindowHeaderRef")
+
+const props = defineProps<{
   osWindow: WindowInstance,
-  startDrag: (e: MouseEvent) => void,
+  rejectDraggable?: (ele: HTMLElement) => void,
+  rejectDoubleTapMax?: (ele: HTMLElement) => void,
 }>()
+
+onMounted(() => {
+  if (!WindowHeaderRef.value) return null;
+  console.log(WindowHeaderRef.value)
+  console.log(WindowHeaderRef.value instanceof HTMLElement)
+  if (props?.rejectDraggable) props.rejectDraggable(WindowHeaderRef.value)
+  if (props?.rejectDoubleTapMax) props.rejectDoubleTapMax(WindowHeaderRef.value)
+})
 
 </script>
 
 <template>
-  <div class="window-header" @mousedown="startDrag">
+  <div class="window-header" ref="WindowHeaderRef">
     <span class="window-title">{{ osWindow.app.name }}</span>
     <div class="window-controls">
       <button @click.stop="osWindow.toggleMinimize();" class="control-btn minimize-btn">_</button>

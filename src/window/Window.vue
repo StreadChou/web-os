@@ -3,6 +3,7 @@ import {ref, computed, useTemplateRef, onMounted} from 'vue'
 import {WindowInstance} from './WindowInstance.ts'
 import {useAppManager} from '../store/AppManager.ts'
 import interact from 'interactjs'
+import WindowBar from "./WindowBar.vue";
 
 const AppManager = useAppManager()
 const props = defineProps<{
@@ -16,6 +17,7 @@ const OsWindow = ref(AppManager.windows[props.windowInstance.id] as WindowInstan
 // window 的 DOM
 const WindowRef = useTemplateRef<HTMLDivElement>('WindowRef')
 
+
 // 计算属性生成 CSS 样式
 const windowStyle = computed(() => ({
   top: OsWindow.value.windowStyle.top + 'px',
@@ -24,6 +26,39 @@ const windowStyle = computed(() => ({
   height: OsWindow.value.windowStyle.height + 'px',
   zIndex: OsWindow.value.zIndex,
 }))
+
+
+// 注入拖动
+const rejectDraggable = (ele: HTMLElement) => {
+  interact(ele).draggable({
+    modifiers: [
+      interact.modifiers.restrictRect({
+        restriction: AppManager.domRef.windowLayoutRef || 'parent',
+        endOnly: true
+      })
+    ],
+    listeners: {
+      start(event) {
+        if (OsWindow.value.isMaximized) {
+          OsWindow.value.toggleMaximize()
+          OsWindow.value.windowStyle.top = event.clientY
+        }
+      },
+      move(event) {
+        const top = OsWindow.value.windowStyle.top + event.dy
+        const left = OsWindow.value.windowStyle.left + event.dx
+        OsWindow.value.move(top, left)
+      },
+    }
+  })
+};
+
+// 注入双击最大化
+const rejectDoubleTapMax = (ele: HTMLElement) => {
+  interact(ele).on('doubletap', () => {
+    OsWindow.value.toggleMaximize()
+  })
+}
 
 
 // 初始化
@@ -50,37 +85,6 @@ const init = async () => {
       }
     }
   })
-
-  // 拖动
-  interact(WindowRef.value.querySelector('.window-header') as HTMLElement).draggable({
-    modifiers: [
-      interact.modifiers.restrictRect({
-        restriction: AppManager.domRef.windowLayoutRef || 'parent',
-        endOnly: true
-      })
-    ],
-    listeners: {
-      start(event) {
-        if (OsWindow.value.isMaximized) {
-          OsWindow.value.toggleMaximize()
-          OsWindow.value.windowStyle.top = event.clientY
-        }
-      },
-      move(event) {
-        const top = OsWindow.value.windowStyle.top + event.dy
-        const left = OsWindow.value.windowStyle.left + event.dx
-        OsWindow.value.move(top, left)
-      },
-    }
-  })
-
-  // 双击标题栏最大化
-  interact(WindowRef.value.querySelector('.window-header') as HTMLElement).on(
-      'doubletap',
-      () => OsWindow.value.toggleMaximize()
-  )
-
-
 }
 
 
@@ -91,23 +95,52 @@ onMounted(() => init())
 
 <template>
   <div class="window" :style="windowStyle" ref="WindowRef" @click="OsWindow.active">
-    <div class="window-header">
-      <span class="window-title">标题栏</span>
-      <div class="window-controls">
-        <button @click.stop="OsWindow.toggleMinimize" class="control-btn minimize-btn">_</button>
-        <button @click="OsWindow.toggleMaximize" class="control-btn maximize-btn">
-          <span v-if="!OsWindow.isMaximized">&#9723;</span>
-          <span v-else>&#8597;</span>
-        </button>
-        <button @click.stop="OsWindow.close" class="control-btn close-btn">X</button>
-      </div>
-    </div>
+
+
+    <!-- 标题栏: 先使用APP自己设置的 -->
+    <template v-if="'header' in OsWindow.app">
+      <template v-if="OsWindow.app.header">
+        <component
+            :is="windowInstance.app.header"
+            v-bind="{osWindow: OsWindow, rejectDraggable, rejectDoubleTapMax}"
+            @dblclick="windowInstance.toggleMaximize()"
+        ></component>
+      </template>
+    </template>
+    <!-- 标题栏: 否则读全局的 -->
+    <template v-else-if="'windowBar' in AppManager.options">
+      <template v-if="AppManager.options.windowBar">
+        <component
+            :is="AppManager.options.windowBar"
+            v-bind="{osWindow: OsWindow, rejectDraggable, rejectDoubleTapMax}"
+            @dblclick="windowInstance.toggleMaximize()"
+        ></component>
+      </template>
+    </template>
+    <!-- 标题栏: 最后才走默认的 -->
+    <template v-else>
+      <WindowBar
+          v-bind="{osWindow: OsWindow, rejectDraggable, rejectDoubleTapMax}"
+      ></WindowBar>
+    </template>
+
+
     <div class="window-content">
-      <div class="default-window-content">
-        <div>这是窗口的内容区域。</div>
-        <div>是否最大化: {{ OsWindow.isMaximized }}</div>
-        <div>是否活跃: {{ OsWindow.isActive }}</div>
-      </div>
+      <template v-if="windowInstance.app.view">
+        <component :is="windowInstance.app.view"
+                   v-bind="{osWindow: OsWindow,rejectDraggable, rejectDoubleTapMax}"
+        ></component>
+      </template>
+      <template v-else>
+        <div class="default-window-content">
+          <div>这是窗口 {{ windowInstance.id }} 的内容区域。</div>
+          <div>是否最大化: {{ OsWindow.isMaximized }}</div>
+          <div>是否活跃: {{ OsWindow.isActive }}</div>
+          <template v-for="(item, key) in windowStyle">
+            <div>{{ key }}: {{ item }}</div>
+          </template>
+        </div>
+      </template>
     </div>
   </div>
 </template>
