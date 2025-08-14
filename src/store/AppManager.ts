@@ -29,20 +29,30 @@ export const useAppManager = defineStore('_wo_app_manager', {
         injectApp(app: AppConfigInterface) {
             this.apps.push(app);
         },
-        createWindow(app: AppConfigInterface) {
-            // 每次打开应用的时候, 偏移一下, 避免覆盖, 不知道自己打开了
-            const x = this.defaultX + (this.count * 5);
-            const y = this.defaultY + (this.count * 5);
 
-            const width = app.defaultWidth || 800;
-            const height = app.defaultHeight || 400;
+        showOrCreateWindow(app: AppConfigInterface) {
+            const has = Object.values(this.windows).find(ele => ele.app.package == app.package);
+            if (has) return has.active();
+            this.createWindow(app);
+        },
+
+        createWindow(app?: AppConfigInterface) {
+            if (!app) return null;
+            // 每次打开应用的时候, 偏移一下, 避免覆盖, 不知道自己打开了
+            let x = this.defaultX + (this.count * 5);
+            let y = this.defaultY + (this.count * 5);
+            let width = app.defaultWidth || 200;
+            let height = app.defaultHeight || 100;
 
             this.count += 1;
+            if (app.defaultMax) {
+                x = 0;
+                y = 0;
+                width = 76800;
+                height = 43200;
+            }
             const window = new WindowInstance(this.count, app, x, y, width, height);
             this.windows[window.id] = window;
-
-            // 设置默认最大化
-            if (app.defaultMax) window.toggleMaximize();
             // 设置活跃
             window.active();
 

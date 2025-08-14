@@ -15,7 +15,7 @@ import AppArea from "./AppArea.vue";
 .docker-container {
   width: 100%;
   height: var(--docker-height);
-  position: fixed;
+  position: absolute;
   left: 0;
   bottom: 10px;
   padding: 0 20px;

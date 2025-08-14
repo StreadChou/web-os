@@ -10,14 +10,17 @@ const appManager = useAppManager();
     <template v-if="appManager.options.wallpaper">
       <img :src="appManager.options.wallpaper" alt="Wallpaper"/>
     </template>
+    <template v-else>
+      <div class="defaultWallpaper"></div>
+    </template>
   </div>
 </template>
 
 <style scoped>
 .Wallpaper {
-  width: 100vw; /* 使用视口宽度 */
-  height: 100vh; /* 使用视口高度 */
-  position: fixed;
+  width: 100%;
+  height: 100%;
+  position: absolute;
   top: 0;
   left: 0;
   z-index: 1;
@@ -27,10 +30,9 @@ const appManager = useAppManager();
   overflow: hidden; /* 防止图片溢出 */
 }
 
-.Wallpaper img {
+.Wallpaper img, .Wallpaper .defaultWallpaper {
   min-width: 100%; /* 图片至少占满宽度 */
   min-height: 100%; /* 图片至少占满高度 */
-  position: relative; /* 相对定位以适应容器 */
-  object-fit: cover; /* 保持宽高比，同时裁剪以填满容器 */
+  background: rebeccapurple;
 }
 </style>

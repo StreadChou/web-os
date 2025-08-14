@@ -23,7 +23,7 @@ onMounted(() => {
 <style scoped>
 .container {
   width: 100%;
-  height: calc(100% - 65px);
+  height: calc(100% - var(--docker-height) - 10px);
   position: absolute;
   z-index: 20;
   overflow: hidden;

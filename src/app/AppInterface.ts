@@ -1,4 +1,6 @@
 export interface AppConfigInterface {
+    /** 唯一的包名 */
+    package: string;
     /** App名字 */
     name: string;
     /** App图标 */

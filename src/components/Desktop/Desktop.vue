@@ -13,7 +13,7 @@ const selectAppIndex = ref<number | null>(null);
 const clickApp = (app: AppConfigInterface, index: number) => {
   // 如果再次点击 app 则走打开逻辑
   if (selectAppIndex.value == index) {
-    AppManager.createWindow(app)
+    AppManager.showOrCreateWindow(app)
     selectAppIndex.value = null;
     return null;
   }
@@ -42,8 +42,8 @@ const clickApp = (app: AppConfigInterface, index: number) => {
 
 <style scoped>
 .container {
-  width: 100vw;
-  height: calc(100vh - 65px);
+  width: 100%;
+  height: calc(100% - 65px);
   position: absolute;
   z-index: 10;
   display: flex;

@@ -33,8 +33,15 @@ export class WindowInstance {
         this.id = id;
         this.app = app;
         this.title = app.name;
+        width = Math.min(width, this.maxWidth);
+        height = Math.min(height, this.maxHeight);
+        if (width >= this.maxWidth) left = 0;
+        if (height >= this.maxHeight) top = 0;
         this.windowStyle = {top, left, width, height}
-        this.recordWindowsStyle();
+        // 如果一打开就是最大化的, 初始化一个小窗
+        if (this.isMaximized) {
+            this.lastWindowStyle = {top, left, width: width / 2, height: height / 2}
+        }
     }
 
     /** 最大宽度: 不能超过父元素的宽度 */
@@ -55,7 +62,10 @@ export class WindowInstance {
 
     /** 是否最大化 */
     get isMaximized() {
-        return this.maxHeight == this.windowStyle.height && this.maxWidth == this.windowStyle.width;
+        return this.maxHeight == this.windowStyle.height
+            && this.maxWidth == this.windowStyle.width
+            && this.windowStyle.top == 0
+            && this.windowStyle.left == 0;
     }
 
     get isActive() {
@@ -116,7 +126,6 @@ export class WindowInstance {
     }
 
 
-
     getDockerIconDom() {
         const AppManager = useAppManager();
         const appArea = AppManager.domRef.appArea;
@@ -169,7 +178,7 @@ export class WindowInstance {
     createChildWindow(app: AppConfigInterface) {
         const AppManager = useAppManager();
         const window = AppManager.createWindow(app);
-        this.childWindows.push(window);
+        if (window) this.childWindows.push(window);
     }
 
 }
