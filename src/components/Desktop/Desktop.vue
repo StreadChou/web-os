@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {useAppManager} from "../../store/AppManager.ts";
-import type {AppConfigInterface} from "../../app/AppInterface.ts";
+import type {AppInterfaceInStore} from "../../app/Apps/AppInterface.ts";
 
 
 const AppManager = useAppManager();
 
 // 添加一个响应式变量来存储当前选中 app 的名称或索引
-const selectAppIndex = ref<number | null>(null);
+const selectApp = ref<string | null>(null);
 
 // 处理 app 点击事件
-const clickApp = (app: AppConfigInterface, index: number) => {
-  // 如果再次点击 app 则走打开逻辑
-  if (selectAppIndex.value == index) {
-    AppManager.showOrCreateWindow(app)
-    selectAppIndex.value = null;
-    return null;
-  }
-  selectAppIndex.value = index;
+const clickApp = (app: AppInterfaceInStore) => {
+  // 第一次点击记录, 第二次点击才打开
+  if (selectApp.value !== app.packageId) return selectApp.value = app.packageId;
+
+  AppManager.showOrCreateWindow(app)
+  selectApp.value = null;
+  return null;
+
 };
 
 </script>
@@ -26,15 +26,10 @@ const clickApp = (app: AppConfigInterface, index: number) => {
   <div class="container">
     <div class="app-grid">
       <div v-for="(app, index) in AppManager.apps" :key="index"
-           :class="{ 'app-item': true,'is-selected': index === selectAppIndex }"
-           @click="clickApp(app, index)">
-        <template v-if="app.hidden && app.hidden()">
-
-        </template>
-        <template v-else>
-          <img :src="app.icon" :alt="app.name"/>
-          <span>{{ app.name }}</span>
-        </template>
+           :class="{ 'app-item': true,'is-selected': app.packageId === selectApp }"
+           @click="clickApp(app)">
+        <img :src="app.icon" :alt="app.name"/>
+        <span>{{ app.name }}</span>
       </div>
     </div>
   </div>

@@ -2,10 +2,13 @@ import type {App, Plugin} from 'vue'; // 导入 Vue 的 App 和 Plugin 类型
 import WebOs from "./components/WebOs.vue";
 import './style/global.css'
 import {useAppManager} from "./store/AppManager.ts";
-import type {AppConfigInterface} from "./app/AppInterface.ts";
 import {createPinia} from 'pinia';
 import type {WebOSPluginOptions} from "./define/WebOSPlugin.ts";
-import {WindowInstance} from "./window/WindowInstance.ts";
+import {AppHelper} from "./app/Apps/AppHelper.ts";
+import type {AppInterface} from "./app/Apps/AppInterface.ts";
+import {RunningAppManager} from "./app/RunningApp/RunningAppManager.ts";
+import {RunningApp} from "./app/RunningApp/RunningApp.ts";
+import {DomRefManger} from "./app/DomRef/DomRefManger.ts";
 
 // 定义 WebOSPlugin
 const WebOSPlugin: Plugin<WebOSPluginOptions> = {
@@ -46,6 +49,13 @@ const WebOSPlugin: Plugin<WebOSPluginOptions> = {
 };
 
 
-export {WebOs, useAppManager, WindowInstance};
-export type {AppConfigInterface, WebOSPluginOptions};
+
+export {
+    WebOs,
+    useAppManager,
+    AppHelper,
+    RunningAppManager, RunningApp,
+    DomRefManger,
+};
+export type {AppInterface, WebOSPluginOptions};
 export default WebOSPlugin;

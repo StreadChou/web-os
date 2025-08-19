@@ -1,35 +1,22 @@
 <script setup lang="ts">
-import type {WindowInstance} from "./WindowInstance.ts";
-import {onMounted, useTemplateRef} from "vue";
+import {RunningAppManager} from "../app/RunningApp/RunningAppManager.ts";
 
-const WindowHeaderRef = useTemplateRef<HTMLElement>("WindowHeaderRef")
-
-const props = defineProps<{
-  osWindow: WindowInstance,
-  rejectDraggable?: (ele: HTMLElement) => void,
-  rejectDoubleTapMax?: (ele: HTMLElement) => void,
-}>()
-
-onMounted(() => {
-  if (!WindowHeaderRef.value) return null;
-  console.log(WindowHeaderRef.value)
-  console.log(WindowHeaderRef.value instanceof HTMLElement)
-  if (props?.rejectDraggable) props.rejectDraggable(WindowHeaderRef.value)
-  if (props?.rejectDoubleTapMax) props.rejectDoubleTapMax(WindowHeaderRef.value)
-})
+const props = defineProps<{ pid: number; }>()
+const AppInstance = RunningAppManager.Instance.getAppInstance(props.pid);
+const AppStyle = AppInstance.getStore();
 
 </script>
 
 <template>
-  <div class="window-header" ref="WindowHeaderRef">
-    <span class="window-title">{{ osWindow.app.name }}</span>
+  <div class="window-header" wo-draggable wo-double-tap>
+    <span class="window-title">{{ AppStyle.title }}</span>
     <div class="window-controls">
-      <button @click.stop="osWindow.toggleMinimize();" class="control-btn minimize-btn">_</button>
-      <button @click.stop="osWindow.toggleMaximize();" class="control-btn maximize-btn">
-        <span v-if="!osWindow.isMaximized">&#9723;</span> <!-- 方框图标 -->
+      <button @click.stop="AppInstance.toggleMinimize();" class="control-btn minimize-btn">_</button>
+      <button @click.stop="AppInstance.toggleMaximize();" class="control-btn maximize-btn">
+        <span v-if="!AppInstance.isMaximized">&#9723;</span> <!-- 方框图标 -->
         <span v-else>&#8597;</span> <!-- 恢复图标 -->
       </button>
-      <button @click.stop="osWindow.close()" class="control-btn close-btn">X</button>
+      <button @click.stop="AppInstance.close()" class="control-btn close-btn">X</button>
     </div>
   </div>
 </template>

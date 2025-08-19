@@ -1,7 +1,7 @@
 {
   "name": "@stread/web-os",
   "private": false,
-  "version": "0.0.10",
+  "version": "0.0.11",
   "type": "module",
   "main": "dist/web-os.umd.js",
   "module": "dist/web-os.es.js",
@@ -28,23 +28,23 @@
     "major": "npm run build && npm version major --no-git-tag-version"
   },
   "peerDependencies": {
-    "pinia": "^3.0.3"
-  },
-  "dependencies": {
-    "interactjs": "^1.10.27",
-    "vue": "^3.5.13"
+    "pinia": "^3.0.3",
+    "vue": "^3.4.18"
   },
   "devDependencies": {
     "@types/node": "^24.0.3",
     "@vitejs/plugin-vue": "^5.2.3",
+    "vue": "^3.4.18",
     "@vue/tsconfig": "^0.7.0",
     "pinia": "^3.0.3",
     "typescript": "~5.8.3",
     "vite": "^6.3.5",
     "vite-plugin-dts": "^4.5.4",
-    "vue-tsc": "^2.2.8"
+    "vue-tsc": "^2.2.8",
+    "interactjs": "^1.10.27"
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "license": "MIT"
 }

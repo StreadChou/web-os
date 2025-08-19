@@ -2,20 +2,21 @@
 import {useAppManager} from "../../store/AppManager.ts";
 import Window from "../../window/Window.vue";
 import {onMounted, useTemplateRef} from "vue";
+import {DomRef} from "../../app/DomRef/DomRef.ts";
 
 const AppManager = useAppManager();
-const WindowLayoutRef = useTemplateRef<HTMLDivElement>('WindowLayoutRef')
+const WindowLayoutRef = useTemplateRef<HTMLElement>('WindowLayoutRef')
 
 onMounted(() => {
   if (!WindowLayoutRef.value) return null;
-  AppManager.domRef.windowLayoutRef = WindowLayoutRef.value as HTMLDivElement;
+  DomRef.windowLayoutRef = WindowLayoutRef.value as HTMLElement;
 })
 </script>
 
 <template>
   <div class="container" ref="WindowLayoutRef">
-    <template v-for="(item) of AppManager.windows" :key="item.id">
-      <Window :window-instance="item" :index="item.id"/>
+    <template v-for="(item) in AppManager.runningApps" :key="item.pid">
+      <Window :pid="item.pid"/>
     </template>
   </div>
 </template>
@@ -26,7 +27,6 @@ onMounted(() => {
   height: calc(100% - var(--docker-height) - 10px);
   position: absolute;
   z-index: 20;
-  overflow: hidden;
   pointer-events: none;
 }
 </style>

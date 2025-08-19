@@ -1,72 +1,53 @@
 import {defineStore} from 'pinia';
-import type {AppConfigInterface} from "../app/AppInterface.ts";
-import {WindowInstance} from "../window/WindowInstance.ts";
 import type {WebOSPluginOptions} from "../define/WebOSPlugin.ts";
-
-export interface DomRef {
-    windowLayoutRef?: HTMLDivElement,
-    appArea?: HTMLDivElement,
-}
+import type {AppInterfaceInStore} from "../app/Apps/AppInterface.ts";
+import {AppHelper} from "../app/Apps/AppHelper.ts";
+import {type RunningAppInStore} from "../app/RunningApp/RunningApp.ts";
+import {RunningAppManager} from "../app/RunningApp/RunningAppManager.ts";
 
 export const useAppManager = defineStore('_wo_app_manager', {
     state: () => ({
-        count: 0,
+        // 所有的已经注册的软件 - 用于渲染桌面上的图标
+        apps: {} as Record<string, AppInterfaceInStore>,
+        // 运行的app的pid的自增
+        pidUnique: 0,
+        // 运行中的App
+        runningApps: {} as Record<number, RunningAppInStore>,
 
         options: {} as WebOSPluginOptions,
-        // 所有的软件
-        apps: [] as AppConfigInterface[],
-        // 所有正在运行的软件
-        windows: {} as { [key in number]: WindowInstance },
-        // 所有dom链接的ref
-        domRef: {} as DomRef,
-
-        /** 打开应用时候的默认X位置 */
-        defaultX: 50,
-        /** 打开应用时候的默认Y位置 */
-        defaultY: 50,
     }),
     actions: {
-        injectApp(app: AppConfigInterface) {
-            this.apps.push(app);
+        // 展示App或者创建一个新的
+        showOrCreateWindow(app: AppInterfaceInStore) {
+            const config = AppHelper.getAppConfig(app.packageId);
+            const allRunning = Object.values(this.runningApps).filter(ele => ele.packageId == config.packageId);
+            if (!allRunning || allRunning.length <= 0) return this.createWindow(app);
+
+            // 每次点击就会切换到下一个窗口的逻辑
+            const instances = allRunning.map(ele => RunningAppManager.Instance.getAppInstance(ele.pid));
+            let index = instances.findIndex(ele => ele.isActive);
+            const target = index + 1 > instances.length - 1 ? index = 0 : index += 1;
+            instances[target].active();
         },
 
-        showOrCreateWindow(app: AppConfigInterface) {
-            const has = Object.values(this.windows).find(ele => ele.app.package == app.package);
-            if (has) return has.active();
-            this.createWindow(app);
-        },
-
-        createWindow(app?: AppConfigInterface) {
+        // 创建一个新的窗口
+        createWindow(app?: AppInterfaceInStore) {
             if (!app) return null;
-            // 每次打开应用的时候, 偏移一下, 避免覆盖, 不知道自己打开了
-            let x = this.defaultX + (this.count * 5);
-            let y = this.defaultY + (this.count * 5);
-            let width = app.defaultWidth || 200;
-            let height = app.defaultHeight || 100;
-
-            this.count += 1;
-            if (app.defaultMax) {
-                x = 0;
-                y = 0;
-                width = 76800;
-                height = 43200;
-            }
-            const window = new WindowInstance(this.count, app, x, y, width, height);
-            this.windows[window.id] = window;
-            // 设置活跃
-            window.active();
-
-            return window;
+            // 获取完整配置
+            const config = AppHelper.getAppConfig(app.packageId);
+            this.pidUnique += 1;
+            const appInstance = RunningAppManager.Instance.createAppInstance(this.pidUnique, config.packageId);
+            this.runningApps[appInstance.pid] = appInstance.toDefaultStore();
         },
 
         closeWindow(id: number) {
-            delete this.windows[id]
+            delete this.runningApps[id]
         },
 
-        selectWindows(id: number) {
-            for (const i in this.windows) {
-                const item = this.windows[i];
-                item.zIndex = item.id == id ? 101 : 100;
+        selectWindows(pid: number) {
+            for (const i in this.runningApps) {
+                const item = this.runningApps[i];
+                item.zIndex = item.pid == pid ? 101 : 100;
             }
         }
     },
