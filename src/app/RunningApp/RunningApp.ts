@@ -150,6 +150,32 @@ export class RunningApp {
             /** 高: 单位PX */
             height: 400,
         };
+        if (appConfig.defaultWidth) {
+            if (typeof appConfig.defaultWidth == "number") {
+                windowStyle.width = appConfig.defaultWidth;
+            } else if (appConfig.defaultWidth == "max") {
+                windowStyle.width = DomRefManger.windowMaxWidth;
+            } else if (appConfig.defaultWidth == "half") {
+                windowStyle.width = Math.floor(DomRefManger.windowMaxWidth / 2);
+            }
+        }
+
+        if (appConfig.defaultHeight) {
+            if (typeof appConfig.defaultHeight == "number") {
+                windowStyle.height = appConfig.defaultHeight;
+            } else if (appConfig.defaultHeight == "max") {
+                windowStyle.height = DomRefManger.windowMaxHeight;
+            } else if (appConfig.defaultHeight == "half") {
+                windowStyle.height = Math.floor(DomRefManger.windowMaxHeight / 2);
+            }
+        }
+
+
+        if (appConfig.defaultMax) {
+            windowStyle.width = DomRefManger.windowMaxWidth;
+            windowStyle.height = DomRefManger.windowMaxHeight;
+        }
+
         return {
             pid: this.pid,
             packageId: this.packageId,
