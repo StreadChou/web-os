@@ -170,10 +170,20 @@ export class RunningApp {
             }
         }
 
-
         if (appConfig.defaultMax) {
             windowStyle.width = DomRefManger.windowMaxWidth;
             windowStyle.height = DomRefManger.windowMaxHeight;
+        }
+
+        const lastWindowStyle = {...windowStyle};
+
+        if (windowStyle.width == DomRefManger.windowMaxWidth) {
+            windowStyle.left = 0;
+            lastWindowStyle.width = Math.floor(DomRefManger.windowMaxWidth / 2)
+        }
+        if (windowStyle.height == DomRefManger.windowMaxHeight) {
+            windowStyle.top = 0;
+            lastWindowStyle.height = Math.floor(DomRefManger.windowMaxHeight / 2)
         }
 
         return {
@@ -181,7 +191,8 @@ export class RunningApp {
             packageId: this.packageId,
             title: appConfig.name,
             icon: appConfig.icon,
-            windowStyle: windowStyle,
+            windowStyle,
+            lastWindowStyle,
             zIndex: 101,
         }
     }
